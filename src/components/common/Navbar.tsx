@@ -36,9 +36,7 @@ export default function Navbar() {
                 <Link href="/dashboard" className="transition-colors duration-200 hover:text-[#5F9598]" style={{ color: '#F3F4F4' }}>
                   Dashboard
                 </Link>
-                <Link href="/dashboard/orders" className="transition-colors duration-200 hover:text-[#5F9598]" style={{ color: '#F3F4F4' }}>
-                  Orders
-                </Link>
+       
                 <Link href="/dashboard/inventory" className="transition-colors duration-200 hover:text-[#5F9598]" style={{ color: '#F3F4F4' }}>
                   Inventory
                 </Link>

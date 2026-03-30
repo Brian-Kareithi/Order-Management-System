@@ -29,6 +29,10 @@ export interface OrderItem {
 }
 
 export interface Order {
+  item: any;
+  amount: any;
+  quantity: any;
+  payment: string | number | readonly string[] | undefined;
   id: string;
   orderId: string;
   customerId: string;
