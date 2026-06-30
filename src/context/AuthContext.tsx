@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User as FirebaseUser
+  User as FirebaseUser,
+  UserCredential
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, writeBatch } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -19,9 +20,9 @@ interface AuthContextType {
   firebaseUser: FirebaseUser | null;
   loading: boolean;
   signUp: (email: string, password: string, name: string, role: UserRole) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
-  processPaymentAndDeductStock: (orderData: any, paymentMethod: string, transactionCode?: string) => Promise<string>; // Changed to Promise<string>
+  processPaymentAndDeductStock: (orderData: Record<string, unknown>, paymentMethod: string, transactionCode?: string) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,13 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         router.push('/customer');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
       let errorMessage = 'An error occurred during sign up';
-      if (error.code === 'auth/email-already-in-use') {
+      if (err.code === 'auth/email-already-in-use') {
         errorMessage = 'Email already in use';
-      } else if (error.code === 'auth/weak-password') {
+      } else if (err.code === 'auth/weak-password') {
         errorMessage = 'Password should be at least 6 characters';
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (err.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address';
       }
       toast.error(errorMessage);
@@ -131,13 +133,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         throw new Error('User data not found');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
       let errorMessage = 'Invalid email or password';
-      if (error.code === 'auth/user-not-found') {
+      if (err.code === 'auth/user-not-found') {
         errorMessage = 'No account found with this email';
-      } else if (error.code === 'auth/wrong-password') {
+      } else if (err.code === 'auth/wrong-password') {
         errorMessage = 'Incorrect password';
-      } else if (error.code === 'auth/too-many-requests') {
+      } else if (err.code === 'auth/too-many-requests') {
         errorMessage = 'Too many failed attempts. Try again later';
       }
       toast.error(errorMessage);
@@ -152,7 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setFirebaseUser(null);
       toast.success('Logged out successfully!');
       router.push('/auth/login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Error logging out');
       throw error;
     }
@@ -160,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Process payment and deduct stock
   const processPaymentAndDeductStock = async (
-    orderData: any, 
+    orderData: Record<string, unknown>, 
     paymentMethod: string, 
     transactionCode?: string
   ): Promise<string> => {
@@ -183,22 +186,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         customerEmail: user.email,
         customerPhone: user.phone,
         items: [{
-          productId: orderData.productId,
-          productName: orderData.productName,
-          quantity: orderData.quantity,
-          price: orderData.price,
-          subtotal: orderData.price * orderData.quantity
+          productId: orderData.productId as string,
+          productName: orderData.productName as string,
+          quantity: orderData.quantity as number,
+          price: orderData.price as number,
+          subtotal: (orderData.price as number) * (orderData.quantity as number)
         }],
-        itemCount: orderData.quantity,
-        subtotal: orderData.price * orderData.quantity,
+        itemCount: orderData.quantity as number,
+        subtotal: (orderData.price as number) * (orderData.quantity as number),
         tax: 0,
         shipping: 0,
-        totalAmount: orderData.amount,
+        totalAmount: orderData.amount as number,
         status: 'Pending',
         paymentStatus: 'Paid',
-        paymentMethod: paymentMethod as any,
+        paymentMethod: (paymentMethod === 'mpesa' ? 'M-Pesa' : paymentMethod) as 'M-Pesa' | 'Cash' | 'Bank Transfer' | 'Card' | 'Mobile Money',
         transactionId: transactionCode,
-        mpesaReceipt: paymentMethod === 'mpesa' ? transactionCode : undefined,
+        mpesaReceipt: paymentMethod === 'mpesa' || paymentMethod === 'M-Pesa' ? transactionCode : undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
         notes: ''
@@ -209,7 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       batch.set(orderRef, order);
 
       // Update inventory - deduct stock
-      const inventoryRef = doc(db, 'inventory', orderData.productId);
+      const inventoryRef = doc(db, 'inventory', orderData.productId as string);
       const inventoryDoc = await getDoc(inventoryRef);
       
       if (!inventoryDoc.exists()) {
@@ -218,7 +221,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const inventoryData = inventoryDoc.data() as InventoryItem;
       const currentQuantity = inventoryData.quantity;
-      const newQuantity = currentQuantity - orderData.quantity;
+      const newQuantity = currentQuantity - (orderData.quantity as number);
 
       if (newQuantity < 0) {
         throw new Error('Insufficient stock');
@@ -237,11 +240,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const transactionRef = doc(db, 'inventoryTransactions', `${orderId}_tx`);
       const inventoryTransaction: InventoryTransaction = {
         id: `${orderId}_tx`,
-        itemId: orderData.productId,
-        itemName: orderData.productName,
+        itemId: orderData.productId as string,
+        itemName: orderData.productName as string,
         type: 'sale',
-        quantity: -orderData.quantity, // Negative for sale
-        price: orderData.price, // Add the price per unit
+        quantity: -(orderData.quantity as number),
+        price: orderData.price as number,
         previousQuantity: currentQuantity,
         newQuantity: newQuantity,
         referenceId: orderId,
@@ -259,12 +262,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         orderId,
         customerId: user.uid,
         customerName: user.name,
-        amount: orderData.amount,
+        amount: orderData.amount as number,
         method: paymentMethod,
         status: 'Completed',
         transactionId: transactionCode,
-        mpesaReceipt: paymentMethod === 'mpesa' ? transactionCode : undefined,
-        phoneNumber: orderData.phoneNumber,
+        mpesaReceipt: paymentMethod === 'mpesa' || paymentMethod === 'M-Pesa' ? transactionCode : undefined,
+        phoneNumber: orderData.phoneNumber as string,
         paymentDate: new Date(),
         createdAt: new Date(),
         updatedAt: new Date()
@@ -278,9 +281,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return orderId; // Return order ID for redirection if needed
       
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const payErr = error as { message?: string };
       console.error('Error processing payment:', error);
-      toast.error(error.message || 'Failed to process payment');
+      toast.error(payErr.message || 'Failed to process payment');
       throw error;
     }
   };

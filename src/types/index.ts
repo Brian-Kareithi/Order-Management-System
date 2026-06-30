@@ -14,7 +14,7 @@ export interface User {
 }
 
 // Order Types
-export type OrderStatus = 'Pending' | 'Processing' | 'Completed' | 'Cancelled' | 'Refunded';
+export type OrderStatus = 'Pending' | 'Processing' | 'Completed' | 'Done' | 'Cancelled' | 'Refunded';
 export type PaymentStatus = 'Paid' | 'Unpaid' | 'Refunded' | 'Partially Paid';
 export type PaymentMethod = 'M-Pesa' | 'Cash' | 'Bank Transfer' | 'Card' | 'Mobile Money';
 
@@ -29,33 +29,36 @@ export interface OrderItem {
 }
 
 export interface Order {
-  item: any;
-  amount: any;
-  quantity: any;
-  payment: string | number | readonly string[] | undefined;
   id: string;
   orderId: string;
   customerId: string;
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
-  items: OrderItem[];
-  itemCount: number;
-  subtotal: number;
-  tax: number;
-  shipping: number;
+  item?: string;
+  itemId?: string;
+  quantity?: number;
+  price?: number;
+  amount?: number;
+  payment?: string;
+  items?: OrderItem[];
+  itemCount?: number;
+  subtotal?: number;
+  tax?: number;
+  shipping?: number;
   discount?: number;
-  totalAmount: number;
+  totalAmount?: number;
   status: OrderStatus;
-  paymentStatus: PaymentStatus;
+  paymentStatus?: PaymentStatus;
   paymentMethod?: PaymentMethod;
   transactionId?: string;
   mpesaReceipt?: string;
   shippingAddress?: string;
   billingAddress?: string;
   notes?: string;
+  phoneNumber?: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
   completedAt?: Date;
   cancelledAt?: Date;
   refundedAt?: Date;

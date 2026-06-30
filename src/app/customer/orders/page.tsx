@@ -25,7 +25,7 @@ interface FirebaseOrder {
   transactionId?: string;
   mpesaReceipt?: string;
   createdAt?: Timestamp | string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Order {
@@ -245,24 +245,23 @@ export default function CustomerOrdersPage() {
   ).length;
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: '#F3F4F4' }}>
+    <div className="min-h-screen py-8 bg-surface">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8 fade-in">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-3 rounded-lg" style={{ backgroundColor: '#061E29' }}>
-                  <ShoppingBag className="h-6 w-6" style={{ color: '#F3F4F4' }} />
+                <div className="p-3 rounded-lg bg-primary">
+                  <ShoppingBag className="h-6 w-6 text-surface" />
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: '#061E29' }}>My Orders</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold text-primary">My Orders</h1>
               </div>
-              <p className="text-lg ml-14" style={{ color: '#1D546D' }}>View and track all your orders</p>
+              <p className="text-lg ml-14 text-secondary">View and track all your orders</p>
             </div>
             <Link 
               href="/customer/new-order" 
-              className="px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg transition-all duration-200 hover:opacity-90 hover:scale-105 w-full sm:w-auto justify-center"
-              style={{ backgroundColor: '#061E29', color: '#F3F4F4' }}
+              className="px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg transition-all duration-200 hover:opacity-90 hover:scale-105 w-full sm:w-auto justify-center bg-primary text-surface"
             >
               <ShoppingBag className="h-5 w-5" />
               New Order
@@ -275,11 +274,11 @@ export default function CustomerOrdersPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Total Orders</p>
-                <p className="text-2xl sm:text-3xl font-bold mt-2" style={{ color: '#061E29' }}>{filteredOrders.length}</p>
+                <p className="text-sm font-medium text-secondary">Total Orders</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-2 text-primary">{filteredOrders.length}</p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                <Package className="h-6 w-6" style={{ color: '#061E29' }} />
+              <div className="p-3 rounded-full bg-primary/10">
+                <Package className="h-6 w-6 text-primary" />
               </div>
             </div>
           </div>
@@ -287,10 +286,10 @@ export default function CustomerOrdersPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Pending</p>
-                <p className="text-2xl sm:text-3xl font-bold mt-2" style={{ color: '#EAB308' }}>{pendingCount}</p>
+                <p className="text-sm font-medium text-secondary">Pending</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-2 text-yellow-500">{pendingCount}</p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}>
+              <div className="p-3 rounded-full bg-yellow-500/10">
                 <Clock className="h-6 w-6 text-yellow-600" />
               </div>
             </div>
@@ -299,11 +298,11 @@ export default function CustomerOrdersPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Completed</p>
-                <p className="text-2xl sm:text-3xl font-bold mt-2" style={{ color: '#5F9598' }}>{completedCount}</p>
+                <p className="text-sm font-medium text-secondary">Completed</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-2 text-accent">{completedCount}</p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(95, 149, 152, 0.1)' }}>
-                <CheckCircle className="h-6 w-6" style={{ color: '#5F9598' }} />
+              <div className="p-3 rounded-full bg-accent/10">
+                <CheckCircle className="h-6 w-6 text-accent" />
               </div>
             </div>
           </div>
@@ -311,11 +310,11 @@ export default function CustomerOrdersPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Total Spent</p>
-                <p className="text-2xl sm:text-3xl font-bold mt-2" style={{ color: '#061E29' }}>KES {totalSpent.toLocaleString()}</p>
+                <p className="text-sm font-medium text-secondary">Total Spent</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-2 text-primary">KES {totalSpent.toLocaleString()}</p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                <DollarSign className="h-6 w-6" style={{ color: '#061E29' }} />
+              <div className="p-3 rounded-full bg-primary/10">
+                <DollarSign className="h-6 w-6 text-primary" />
               </div>
             </div>
           </div>
@@ -326,36 +325,26 @@ export default function CustomerOrdersPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Search Orders</label>
+              <label className="block text-sm font-medium mb-2 text-secondary">Search Orders</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: '#5F9598' }} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-accent" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by Order ID or Item..."
-                  className="w-full pl-10 pr-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: '#F3F4F4',
-                    color: '#061E29',
-                    backgroundColor: '#F3F4F4'
-                  }}
+                  className="w-full pl-10 pr-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all border-surface text-primary bg-surface"
                 />
               </div>
             </div>
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Status</label>
+              <label className="block text-sm font-medium mb-2 text-secondary">Status</label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: '#F3F4F4',
-                  color: '#061E29',
-                  backgroundColor: '#F3F4F4'
-                }}
+                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all border-surface text-primary bg-surface"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -367,16 +356,11 @@ export default function CustomerOrdersPage() {
 
             {/* Payment Filter */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Payment</label>
+              <label className="block text-sm font-medium mb-2 text-secondary">Payment</label>
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: '#F3F4F4',
-                  color: '#061E29',
-                  backgroundColor: '#F3F4F4'
-                }}
+                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all border-surface text-primary bg-surface"
               >
                 <option value="all">All Payments</option>
                 <option value="paid">Paid</option>
@@ -387,23 +371,23 @@ export default function CustomerOrdersPage() {
 
           {/* Active Filters */}
           {(searchTerm || statusFilter !== 'all' || paymentFilter !== 'all') && (
-            <div className="mt-4 pt-4 border-t" style={{ borderColor: '#F3F4F4' }}>
+            <div className="mt-4 pt-4 border-t border-surface">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm" style={{ color: '#1D546D' }}>Active Filters:</span>
+                <span className="text-sm text-secondary">Active Filters:</span>
                 {searchTerm && (
-                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1" style={{ backgroundColor: '#061E29', color: '#F3F4F4' }}>
-                    Search: "{searchTerm}"
+                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-primary text-surface">
+                    Search: &ldquo;{searchTerm}&rdquo;
                     <button onClick={() => setSearchTerm('')} className="ml-1 hover:opacity-80">×</button>
                   </span>
                 )}
                 {statusFilter !== 'all' && (
-                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1" style={{ backgroundColor: '#1D546D', color: '#F3F4F4' }}>
+                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-secondary text-surface">
                     Status: {statusFilter}
                     <button onClick={() => setStatusFilter('all')} className="ml-1 hover:opacity-80">×</button>
                   </span>
                 )}
                 {paymentFilter !== 'all' && (
-                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1" style={{ backgroundColor: '#5F9598', color: '#F3F4F4' }}>
+                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-accent text-surface">
                     Payment: {paymentFilter}
                     <button onClick={() => setPaymentFilter('all')} className="ml-1 hover:opacity-80">×</button>
                   </span>
@@ -414,8 +398,7 @@ export default function CustomerOrdersPage() {
                     setStatusFilter('all');
                     setPaymentFilter('all');
                   }}
-                  className="text-sm ml-2 font-medium hover:underline"
-                  style={{ color: '#061E29' }}
+                  className="text-sm ml-2 font-medium hover:underline text-primary"
                 >
                   Clear All
                 </button>
@@ -425,9 +408,9 @@ export default function CustomerOrdersPage() {
         </div>
 
         {/* Orders List */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border fade-in" style={{ borderColor: '#F3F4F4' }}>
-          <div className="px-6 py-4" style={{ backgroundColor: '#061E29' }}>
-            <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: '#F3F4F4' }}>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border fade-in border-surface">
+          <div className="px-6 py-4 bg-primary">
+            <h2 className="text-xl font-bold flex items-center gap-2 text-surface">
               <ShoppingBag className="h-5 w-5" />
               Your Orders ({filteredOrders.length})
             </h2>
@@ -435,10 +418,10 @@ export default function CustomerOrdersPage() {
           
           <div className="p-6">
             {filteredOrders.length === 0 ? (
-              <div className="text-center py-16 rounded-lg" style={{ backgroundColor: '#F3F4F4' }}>
-                <Package className="h-16 w-16 mx-auto mb-4" style={{ color: '#1D546D', opacity: 0.5 }} />
-                <p className="text-lg mb-2" style={{ color: '#061E29' }}>No orders found</p>
-                <p className="mb-6" style={{ color: '#1D546D' }}>
+              <div className="text-center py-16 rounded-lg bg-surface">
+                <Package className="h-16 w-16 mx-auto mb-4 text-secondary/50" />
+                <p className="text-lg mb-2 text-primary">No orders found</p>
+                <p className="mb-6 text-secondary">
                   {orders.length > 0 
                     ? 'No orders match your filters. Try adjusting your search criteria.'
                     : "You haven't placed any orders yet."}
@@ -446,8 +429,7 @@ export default function CustomerOrdersPage() {
                 {orders.length === 0 && (
                   <Link 
                     href="/customer/new-order" 
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:opacity-90"
-                    style={{ backgroundColor: '#061E29', color: '#F3F4F4' }}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:opacity-90 bg-primary text-surface"
                   >
                     <ShoppingBag className="h-5 w-5" />
                     Place Your First Order
@@ -466,14 +448,13 @@ export default function CustomerOrdersPage() {
                   return (
                     <div 
                       key={order.id} 
-                      className="border-2 rounded-lg p-6 transition-all hover:shadow-md"
-                      style={{ borderColor: '#F3F4F4' }}
+                      className="border-2 rounded-lg p-6 transition-all hover:shadow-md border-surface"
                     >
                       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                         {/* Left side - Order Info */}
                         <div className="flex-1 w-full">
                           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-                            <h3 className="text-lg font-bold" style={{ color: '#061E29' }}>Order #{order.orderId}</h3>
+                            <h3 className="text-lg font-bold text-primary">Order #{order.orderId}</h3>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 border w-fit ${getStatusColor(order.status)}`}>
                               {getStatusIcon(order.status)}
                               {order.status}
@@ -482,24 +463,24 @@ export default function CustomerOrdersPage() {
                           
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                              <p className="text-sm" style={{ color: '#1D546D' }}>Item</p>
-                              <p className="font-medium" style={{ color: '#061E29' }}>{mainItem.productName}</p>
+                              <p className="text-sm text-secondary">Item</p>
+                              <p className="font-medium text-primary">{mainItem.productName}</p>
                             </div>
                             <div>
-                              <p className="text-sm" style={{ color: '#1D546D' }}>Quantity</p>
-                              <p className="font-medium" style={{ color: '#061E29' }}>{mainItem.quantity}</p>
+                              <p className="text-sm text-secondary">Quantity</p>
+                              <p className="font-medium text-primary">{mainItem.quantity}</p>
                             </div>
                             <div>
-                              <p className="text-sm" style={{ color: '#1D546D' }}>Unit Price</p>
-                              <p className="font-medium" style={{ color: '#061E29' }}>KES {mainItem.price?.toLocaleString()}</p>
+                              <p className="text-sm text-secondary">Unit Price</p>
+                              <p className="font-medium text-primary">KES {mainItem.price?.toLocaleString()}</p>
                             </div>
                             <div>
-                              <p className="text-sm" style={{ color: '#1D546D' }}>Total</p>
-                              <p className="font-bold" style={{ color: '#5F9598' }}>KES {order.totalAmount?.toLocaleString()}</p>
+                              <p className="text-sm text-secondary">Total</p>
+                              <p className="font-bold text-accent">KES {order.totalAmount?.toLocaleString()}</p>
                             </div>
                           </div>
 
-                          <div className="mt-4 flex items-center gap-4 text-sm" style={{ color: '#1D546D' }}>
+                          <div className="mt-4 flex items-center gap-4 text-sm text-secondary">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
                               {formatDate(order.createdAt)}
@@ -514,8 +495,8 @@ export default function CustomerOrdersPage() {
                         </div>
 
                         {/* Right side - Payment Status */}
-                        <div className="lg:text-right border-t lg:border-t-0 pt-4 lg:pt-0 w-full lg:w-auto" style={{ borderColor: '#F3F4F4' }}>
-                          <p className="text-sm mb-2" style={{ color: '#1D546D' }}>Payment Status</p>
+                        <div className="lg:text-right border-t lg:border-t-0 pt-4 lg:pt-0 w-full lg:w-auto border-surface">
+                          <p className="text-sm mb-2 text-secondary">Payment Status</p>
                           <p className={`font-bold flex items-center lg:justify-end gap-1 text-lg ${getPaymentColor(order.paymentStatus)}`}>
                             {getPaymentIcon(order.paymentStatus)}
                             {order.paymentStatus}
@@ -523,14 +504,13 @@ export default function CustomerOrdersPage() {
                           {order.paymentStatus.toLowerCase() === 'unpaid' && (
                             <Link 
                               href={`/customer/payment/${order.id}`}
-                              className="mt-3 w-full lg:w-auto px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 inline-block text-center"
-                              style={{ backgroundColor: '#5F9598', color: '#F3F4F4' }}
+                              className="mt-3 w-full lg:w-auto px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 inline-block text-center bg-accent text-surface"
                             >
                               Pay Now
                             </Link>
                           )}
                           {order.mpesaReceipt && (
-                            <p className="text-xs mt-2" style={{ color: '#1D546D' }}>
+                            <p className="text-xs mt-2 text-secondary">
                               Receipt: {order.mpesaReceipt}
                             </p>
                           )}
@@ -546,10 +526,10 @@ export default function CustomerOrdersPage() {
 
         {/* Summary Footer */}
         {filteredOrders.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow-md p-4 border fade-in" style={{ borderColor: '#F3F4F4' }}>
+          <div className="mt-6 bg-white rounded-lg shadow-md p-4 border fade-in border-surface">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm">
-              <span style={{ color: '#1D546D' }}>Showing {filteredOrders.length} of {orders.length} orders</span>
-              <span className="font-bold" style={{ color: '#061E29' }}>
+              <span className="text-secondary">Showing {filteredOrders.length} of {orders.length} orders</span>
+              <span className="font-bold text-primary">
                 Total: KES {filteredOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0).toLocaleString()}
               </span>
             </div>

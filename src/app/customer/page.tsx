@@ -28,6 +28,7 @@ interface FirebaseOrder {
   customerId?: string;
   customerName?: string;
   item?: string;
+  itemId?: string;
   price?: number;
   quantity?: number;
   amount?: number;
@@ -37,7 +38,10 @@ interface FirebaseOrder {
   transactionId?: string;
   mpesaReceipt?: string;
   createdAt?: Timestamp | string;
-  [key: string]: any;
+  updatedAt?: Timestamp | string;
+  notes?: string;
+  totalAmount?: number;
+  itemCount?: number;
 }
 
 export default function CustomerDashboard() {
@@ -156,7 +160,7 @@ export default function CustomerDashboard() {
           transactionId: data.transactionId,
           mpesaReceipt: data.mpesaReceipt,
           createdAt: createdAt,
-          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+          updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt ? new Date(data.updatedAt) : undefined,
           notes: data.notes || ''
         } as Order;
       });
@@ -168,7 +172,8 @@ export default function CustomerDashboard() {
     } catch (error) {
       console.error('Error fetching orders:', error);
       // Fallback to query without orderBy if index error
-      if ((error as any).code === 'failed-precondition') {
+      const fetchErr = error as { code?: string };
+      if (fetchErr.code === 'failed-precondition') {
         console.log('Index missing, fetching without orderBy');
         const fallbackQuery = query(
           collection(db, 'orders'), 
@@ -215,7 +220,7 @@ export default function CustomerDashboard() {
             transactionId: data.transactionId,
             mpesaReceipt: data.mpesaReceipt,
             createdAt: createdAt,
-            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+            updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt ? new Date(data.updatedAt) : undefined,
             notes: data.notes || ''
           } as Order;
         });
@@ -253,7 +258,8 @@ export default function CustomerDashboard() {
     } catch (error) {
       console.error('Error fetching messages:', error);
       // Fallback to query without orderBy
-      if ((error as any).code === 'failed-precondition') {
+      const msgErr = error as { code?: string };
+      if (msgErr.code === 'failed-precondition') {
         const fallbackQuery = query(
           collection(db, 'messages'), 
           where('customerId', '==', user?.uid)
@@ -296,11 +302,11 @@ export default function CustomerDashboard() {
     
     // Payment amounts
     const paidAmount = ordersData
-      .filter(o => o.paymentStatus.toLowerCase() === 'paid')
+      .filter(o => o.paymentStatus?.toLowerCase() === 'paid')
       .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     
     const unpaidAmount = ordersData
-      .filter(o => o.paymentStatus.toLowerCase() === 'unpaid')
+      .filter(o => o.paymentStatus?.toLowerCase() === 'unpaid')
       .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     
     const totalSpent = paidAmount; // Only count paid orders in total spent
@@ -364,25 +370,25 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F3F4F4' }}>
+    <div className="min-h-screen bg-surface">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Welcome Header */}
         <div className="mb-8 fade-in">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#061E29' }}>
-              <ShoppingBag className="h-6 w-6" style={{ color: '#F3F4F4' }} />
+            <div className="p-3 rounded-lg bg-primary">
+              <ShoppingBag className="h-6 w-6 text-surface" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold" style={{ color: '#061E29' }}>
+              <h1 className="text-3xl font-bold text-primary">
                 Welcome back, {user?.name || 'Customer'}!
               </h1>
-              <p className="text-sm mt-1" style={{ color: '#1D546D' }}>
+              <p className="text-sm mt-1 text-secondary">
                 Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
               </p>
             </div>
           </div>
-          <p className="text-lg ml-14" style={{ color: '#1D546D' }}>
-            Here's what's happening with your account
+          <p className="text-lg ml-14 text-secondary">
+            Here&apos;s what&apos;s happening with your account
           </p>
         </div>
 
@@ -392,14 +398,14 @@ export default function CustomerDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Total Orders</p>
-                <p className="text-3xl font-bold mt-2" style={{ color: '#061E29' }}>{stats.totalOrders}</p>
-                <p className="text-xs mt-1" style={{ color: '#5F9598' }}>
+                <p className="text-sm font-medium text-secondary">Total Orders</p>
+                <p className="text-3xl font-bold mt-2 text-primary">{stats.totalOrders}</p>
+                <p className="text-xs mt-1 text-accent">
                   Avg: {formatCurrency(stats.averageOrderValue)}
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                <Package className="h-6 w-6" style={{ color: '#061E29' }} />
+              <div className="p-3 rounded-full bg-primary/10">
+                <Package className="h-6 w-6 text-primary" />
               </div>
             </div>
           </div>
@@ -408,14 +414,14 @@ export default function CustomerDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Total Spent</p>
-                <p className="text-3xl font-bold mt-2" style={{ color: '#061E29' }}>{formatCurrency(stats.totalSpent)}</p>
-                <p className="text-xs mt-1" style={{ color: '#5F9598' }}>
+                <p className="text-sm font-medium text-secondary">Total Spent</p>
+                <p className="text-3xl font-bold mt-2 text-primary">{formatCurrency(stats.totalSpent)}</p>
+                <p className="text-xs mt-1 text-accent">
                   Paid: {formatCurrency(stats.paidAmount)}
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                <DollarSign className="h-6 w-6" style={{ color: '#061E29' }} />
+              <div className="p-3 rounded-full bg-primary/10">
+                <DollarSign className="h-6 w-6 text-primary" />
               </div>
             </div>
           </div>
@@ -424,13 +430,13 @@ export default function CustomerDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Pending Payment</p>
-                <p className="text-3xl font-bold mt-2" style={{ color: '#EAB308' }}>{formatCurrency(stats.unpaidAmount)}</p>
-                <p className="text-xs mt-1" style={{ color: '#5F9598' }}>
+                <p className="text-sm font-medium text-secondary">Pending Payment</p>
+                <p className="text-3xl font-bold mt-2 text-yellow-500">{formatCurrency(stats.unpaidAmount)}</p>
+                <p className="text-xs mt-1 text-accent">
                   {stats.pendingOrders} orders pending
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}>
+              <div className="p-3 rounded-full bg-yellow-500/10">
                 <Clock className="h-6 w-6 text-yellow-600" />
               </div>
             </div>
@@ -440,16 +446,16 @@ export default function CustomerDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Completed</p>
-                <p className="text-3xl font-bold mt-2" style={{ color: '#5F9598' }}>{stats.completedOrders}</p>
-                <p className="text-xs mt-1" style={{ color: '#5F9598' }}>
+                <p className="text-sm font-medium text-secondary">Completed</p>
+                <p className="text-3xl font-bold mt-2 text-accent">{stats.completedOrders}</p>
+                <p className="text-xs mt-1 text-accent">
                   {stats.totalOrders > 0 
                     ? Math.round((stats.completedOrders / stats.totalOrders) * 100) 
                     : 0}% success rate
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(95, 149, 152, 0.1)' }}>
-                <CheckCircle className="h-6 w-6" style={{ color: '#5F9598' }} />
+              <div className="p-3 rounded-full bg-accent/10">
+                <CheckCircle className="h-6 w-6 text-accent" />
               </div>
             </div>
           </div>
@@ -458,24 +464,24 @@ export default function CustomerDashboard() {
         {/* Order Status Breakdown */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 fade-in">
           <div className="bg-white rounded-lg shadow p-4 text-center">
-            <p className="text-xs font-medium" style={{ color: '#1D546D' }}>Pending</p>
-            <p className="text-xl font-bold" style={{ color: '#EAB308' }}>{stats.pendingOrders}</p>
+            <p className="text-xs font-medium text-secondary">Pending</p>
+            <p className="text-xl font-bold text-yellow-500">{stats.pendingOrders}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
-            <p className="text-xs font-medium" style={{ color: '#1D546D' }}>Processing</p>
-            <p className="text-xl font-bold" style={{ color: '#3B82F6' }}>{stats.processingOrders}</p>
+            <p className="text-xs font-medium text-secondary">Processing</p>
+            <p className="text-xl font-bold text-blue-500">{stats.processingOrders}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
-            <p className="text-xs font-medium" style={{ color: '#1D546D' }}>Completed</p>
-            <p className="text-xl font-bold" style={{ color: '#5F9598' }}>{stats.completedOrders}</p>
+            <p className="text-xs font-medium text-secondary">Completed</p>
+            <p className="text-xl font-bold text-accent">{stats.completedOrders}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
-            <p className="text-xs font-medium" style={{ color: '#1D546D' }}>Cancelled</p>
-            <p className="text-xl font-bold" style={{ color: '#EF4444' }}>{stats.cancelledOrders}</p>
+            <p className="text-xs font-medium text-secondary">Cancelled</p>
+            <p className="text-xl font-bold text-red-500">{stats.cancelledOrders}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
-            <p className="text-xs font-medium" style={{ color: '#1D546D' }}>Unpaid</p>
-            <p className="text-xl font-bold" style={{ color: '#F97316' }}>{stats.unpaidAmount > 0 ? 'Yes' : 'No'}</p>
+            <p className="text-xs font-medium text-secondary">Unpaid</p>
+            <p className="text-xl font-bold text-orange-500">{stats.unpaidAmount > 0 ? 'Yes' : 'No'}</p>
           </div>
         </div>
         
@@ -484,29 +490,27 @@ export default function CustomerDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow fade-in">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: '#061E29' }}>
-                  <ShoppingBag className="h-4 w-4" style={{ color: '#F3F4F4' }} />
+                <div className="p-2 rounded-lg bg-primary">
+                  <ShoppingBag className="h-4 w-4 text-surface" />
                 </div>
-                <h2 className="text-xl font-bold" style={{ color: '#061E29' }}>Recent Orders</h2>
+                <h2 className="text-xl font-bold text-primary">Recent Orders</h2>
               </div>
               <Link 
                 href="/customer/orders" 
-                className="text-sm font-medium hover:underline flex items-center gap-1"
-                style={{ color: '#5F9598' }}
+                className="text-sm font-medium hover:underline flex items-center gap-1 text-accent"
               >
                 View All <TrendingUp className="h-4 w-4" />
               </Link>
             </div>
             
             {recentOrders.length === 0 ? (
-              <div className="text-center py-12 rounded-lg" style={{ backgroundColor: '#F3F4F4' }}>
-                <ShoppingBag className="h-12 w-12 mx-auto mb-3" style={{ color: '#1D546D', opacity: 0.5 }} />
-                <p className="mb-3 font-medium" style={{ color: '#1D546D' }}>No orders yet</p>
-                <p className="text-sm mb-4" style={{ color: '#5F9598' }}>Start shopping to see your orders here</p>
+              <div className="text-center py-12 rounded-lg bg-surface">
+                <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-secondary/50" />
+                <p className="mb-3 font-medium text-secondary">No orders yet</p>
+                <p className="text-sm mb-4 text-accent">Start shopping to see your orders here</p>
                 <Link 
                   href="/customer/new-order" 
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105"
-                  style={{ backgroundColor: '#5F9598', color: '#F3F4F4' }}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105 bg-accent text-surface"
                 >
                   <ShoppingBag className="h-4 w-4" />
                   Place your first order
@@ -524,48 +528,45 @@ export default function CustomerDashboard() {
                   return (
                     <div 
                       key={order.id} 
-                      className="border rounded-lg p-4 transition-all hover:shadow-md hover:border-[#5F9598]"
-                      style={{ borderColor: '#F3F4F4' }}
+                      className="border border-surface rounded-lg p-4 transition-all hover:shadow-md hover:border-accent"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <p className="font-semibold" style={{ color: '#061E29' }}>Order #{order.orderId}</p>
+                            <p className="font-semibold text-primary">Order #{order.orderId}</p>
                             {order.paymentStatus === 'Unpaid' && (
                               <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">
                                 Action Required
                               </span>
                             )}
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <p style={{ color: '#1D546D' }}>
+                          <div className="grid grid-cols-2 gap-2 text-sm text-secondary">
+                            <p>
                               <span className="font-medium">Item:</span> {mainItem.productName}
                             </p>
-                            <p style={{ color: '#1D546D' }}>
+                            <p>
                               <span className="font-medium">Qty:</span> {mainItem.quantity}
                             </p>
-                            <p style={{ color: '#1D546D' }}>
+                            <p>
                               <span className="font-medium">Price:</span> {formatCurrency(mainItem.price || 0)}
                             </p>
-                            <p style={{ color: '#1D546D' }}>
+                            <p>
                               <span className="font-medium">Total:</span> {formatCurrency(order.totalAmount || 0)}
                             </p>
                           </div>
-                          <p className="text-xs mt-2" style={{ color: '#5F9598' }}>
+                          <p className="text-xs mt-2 text-accent">
                             {order.createdAt.toLocaleDateString()} at {order.createdAt.toLocaleTimeString()}
                           </p>
                         </div>
                         <div className="text-right ml-4">
                           <span 
-                            className="px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 mb-2"
-                            style={{ 
-                              backgroundColor: order.status === 'Completed'
-                                ? '#5F9598' 
-                                : order.status === 'Pending' 
-                                  ? '#EAB308' 
-                                  : '#1D546D',
-                              color: '#F3F4F4'
-                            }}
+                            className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 mb-2 text-surface ${
+                              order.status === 'Completed'
+                                ? 'bg-accent'
+                                : order.status === 'Pending'
+                                  ? 'bg-yellow-500'
+                                  : 'bg-secondary'
+                            }`}
                           >
                             {order.status === 'Pending' && <Clock className="h-3 w-3" />}
                             {order.status === 'Completed' && <CheckCircle className="h-3 w-3" />}
@@ -573,8 +574,9 @@ export default function CustomerDashboard() {
                             {order.status}
                           </span>
                           <p 
-                            className="text-sm font-bold flex items-center justify-end gap-1"
-                            style={{ color: order.paymentStatus === 'Paid' ? '#5F9598' : '#dc2626' }}
+                            className={`text-sm font-bold flex items-center justify-end gap-1 ${
+                              order.paymentStatus === 'Paid' ? 'text-accent' : 'text-red-600'
+                            }`}
                           >
                             {order.paymentStatus === 'Paid' 
                               ? <CheckCircle className="h-3 w-3" /> 
@@ -594,10 +596,10 @@ export default function CustomerDashboard() {
           {/* Messages Section */}
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow fade-in">
             <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 rounded-lg" style={{ backgroundColor: '#061E29' }}>
-                <MessageSquare className="h-4 w-4" style={{ color: '#F3F4F4' }} />
+              <div className="p-2 rounded-lg bg-primary">
+                <MessageSquare className="h-4 w-4 text-surface" />
               </div>
-              <h2 className="text-xl font-bold" style={{ color: '#061E29' }}>Messages</h2>
+              <h2 className="text-xl font-bold text-primary">Messages</h2>
               {messages.filter(m => m.status === 'Unreplied').length > 0 && (
                 <span className="ml-2 px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">
                   {messages.filter(m => m.status === 'Unreplied').length} new
@@ -609,68 +611,59 @@ export default function CustomerDashboard() {
               <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                className="w-full p-4 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all resize-none"
-                style={{ 
-                  borderColor: '#F3F4F4',
-                  backgroundColor: '#F3F4F4',
-                  color: '#061E29'
-                }}
+                className="w-full p-4 border-2 border-surface rounded-lg focus:outline-none focus:ring-2 transition-all resize-none bg-surface text-primary"
                 rows={3}
                 placeholder="Type your message to the seller..."
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim()}
-                className="mt-3 px-6 py-2 rounded-lg font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                style={{ backgroundColor: '#5F9598', color: '#F3F4F4' }}
+                className="mt-3 px-6 py-2 rounded-lg font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-accent text-surface"
               >
                 <MessageSquare className="h-4 w-4" />
                 Send Message
               </button>
             </div>
             
-            <h3 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#1D546D' }}>
+            <h3 className="font-semibold mb-3 flex items-center gap-2 text-secondary">
               <Clock className="h-4 w-4" />
               Recent Messages
             </h3>
             
             {messages.length === 0 ? (
-              <div className="text-center py-8 rounded-lg" style={{ backgroundColor: '#F3F4F4' }}>
-                <MessageSquare className="h-8 w-8 mx-auto mb-2" style={{ color: '#1D546D', opacity: 0.5 }} />
-                <p style={{ color: '#1D546D' }}>No messages yet</p>
-                <p className="text-xs mt-1" style={{ color: '#5F9598' }}>Send a message above to get started</p>
+              <div className="text-center py-8 rounded-lg bg-surface">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-secondary/50" />
+                <p className="text-secondary">No messages yet</p>
+                <p className="text-xs mt-1 text-accent">Send a message above to get started</p>
               </div>
             ) : (
               <div className="space-y-4 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                 {messages.slice(0, 3).map((msg) => (
                   <div 
                     key={msg.id} 
-                    className="border-b pb-3 last:border-0 hover:bg-[#F3F4F4] p-2 rounded transition-colors"
-                    style={{ borderColor: '#F3F4F4' }}
+                    className="border-b border-surface pb-3 last:border-0 hover:bg-surface p-2 rounded transition-colors"
                   >
-                    <p className="italic text-sm" style={{ color: '#061E29' }}>"{msg.message}"</p>
+                     <p className="italic text-sm text-primary">&ldquo;{msg.message}&rdquo;</p>
                     <div className="flex items-center justify-between mt-2">
                       <span 
-                        className="text-xs font-semibold px-2 py-1 rounded flex items-center gap-1"
-                        style={{ 
-                          backgroundColor: msg.status === 'Unreplied' ? '#EAB308' : '#5F9598',
-                          color: '#F3F4F4'
-                        }}
+                        className={`text-xs font-semibold px-2 py-1 rounded flex items-center gap-1 text-surface ${
+                          msg.status === 'Unreplied' ? 'bg-yellow-500' : 'bg-accent'
+                        }`}
                       >
                         {msg.status === 'Unreplied' ? <Clock className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
                         {msg.status}
                       </span>
-                      <span className="text-xs" style={{ color: '#1D546D' }}>
+                      <span className="text-xs text-secondary">
                         {msg.createdAt?.toLocaleDateString?.()}
                       </span>
                     </div>
                     {msg.reply && (
-                      <div className="mt-2 p-2 rounded-lg" style={{ backgroundColor: '#F3F4F4' }}>
-                        <p className="text-xs font-medium mb-1 flex items-center gap-1" style={{ color: '#061E29' }}>
+                      <div className="mt-2 p-2 rounded-lg bg-surface">
+                        <p className="text-xs font-medium mb-1 flex items-center gap-1 text-primary">
                           <MessageSquare className="h-3 w-3" />
                           Reply:
                         </p>
-                        <p className="text-xs" style={{ color: '#1D546D' }}>{msg.reply}</p>
+                        <p className="text-xs text-secondary">{msg.reply}</p>
                       </div>
                     )}
                   </div>
@@ -679,8 +672,7 @@ export default function CustomerDashboard() {
                   <div className="text-center pt-2">
                     <Link 
                       href="/customer/messages" 
-                      className="text-sm font-medium hover:underline inline-flex items-center gap-1"
-                      style={{ color: '#5F9598' }}
+                      className="text-sm font-medium hover:underline inline-flex items-center gap-1 text-accent"
                     >
                       View all {messages.length} messages
                       <TrendingUp className="h-4 w-4" />
@@ -695,56 +687,56 @@ export default function CustomerDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 fade-in">
           <Link href="/customer/shop">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-[#5F9598] hover:scale-105">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-accent hover:scale-105">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(95, 149, 152, 0.1)' }}>
-                  <ShoppingBag className="h-6 w-6" style={{ color: '#5F9598' }} />
+                <div className="p-3 rounded-full bg-accent/10">
+                  <ShoppingBag className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: '#061E29' }}>Browse Shop</h3>
-                  <p className="text-sm" style={{ color: '#1D546D' }}>Explore products</p>
+                  <h3 className="font-bold text-primary">Browse Shop</h3>
+                  <p className="text-sm text-secondary">Explore products</p>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link href="/customer/orders">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-[#5F9598] hover:scale-105">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-accent hover:scale-105">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(29, 84, 109, 0.1)' }}>
-                  <Package className="h-6 w-6" style={{ color: '#1D546D' }} />
+                <div className="p-3 rounded-full bg-secondary/10">
+                  <Package className="h-6 w-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: '#061E29' }}>Track Orders</h3>
-                  <p className="text-sm" style={{ color: '#1D546D' }}>View order status</p>
+                  <h3 className="font-bold text-primary">Track Orders</h3>
+                  <p className="text-sm text-secondary">View order status</p>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link href="/customer/new-order">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-[#5F9598] hover:scale-105">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-accent hover:scale-105">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                  <ShoppingBag className="h-6 w-6" style={{ color: '#061E29' }} />
+                <div className="p-3 rounded-full bg-primary/10">
+                  <ShoppingBag className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: '#061E29' }}>New Order</h3>
-                  <p className="text-sm" style={{ color: '#1D546D' }}>Place order</p>
+                  <h3 className="font-bold text-primary">New Order</h3>
+                  <p className="text-sm text-secondary">Place order</p>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link href="/customer/payments">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-[#5F9598] hover:scale-105">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-accent hover:scale-105">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(95, 149, 152, 0.1)' }}>
-                  <CreditCard className="h-6 w-6" style={{ color: '#5F9598' }} />
+                <div className="p-3 rounded-full bg-accent/10">
+                  <CreditCard className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: '#061E29' }}>Payments</h3>
-                  <p className="text-sm" style={{ color: '#1D546D' }}>Manage payments</p>
+                  <h3 className="font-bold text-primary">Payments</h3>
+                  <p className="text-sm text-secondary">Manage payments</p>
                 </div>
               </div>
             </div>
@@ -753,14 +745,14 @@ export default function CustomerDashboard() {
 
         {/* Summary Footer */}
         {orders.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow-md p-4 border fade-in" style={{ borderColor: '#F3F4F4' }}>
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm">
-              <span style={{ color: '#1D546D' }}>
+          <div className="mt-6 bg-white rounded-lg shadow-md p-4 border border-surface fade-in">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-secondary">
+              <span>
                 <span className="font-medium">{orders.length}</span> total orders • 
                 <span className="font-medium ml-1">{stats.completedOrders}</span> completed •
                 <span className="font-medium ml-1">{stats.pendingOrders}</span> pending
               </span>
-              <span className="font-bold" style={{ color: '#061E29' }}>
+              <span className="font-bold text-primary">
                 Lifetime value: {formatCurrency(stats.totalSpent)}
               </span>
             </div>
@@ -774,15 +766,15 @@ export default function CustomerDashboard() {
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #F3F4F4;
+          background: var(--color-surface);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #1D546D;
+          background: var(--color-secondary);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #5F9598;
+          background: var(--color-accent);
         }
         .fade-in {
           animation: fadeIn 0.5s ease-in-out;

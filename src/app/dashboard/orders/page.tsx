@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, doc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Order } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { 
   ShoppingBag, 
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function OrdersPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +35,31 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
+  const filterOrders = useCallback(() => {
+    let filtered = [...orders];
+
+    if (searchTerm) {
+      filtered = filtered.filter(order => 
+        order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.orderId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.item?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== 'All') {
+      filtered = filtered.filter(order => order.status === statusFilter);
+    }
+
+    if (paymentFilter !== 'All') {
+      filtered = filtered.filter(order => order.payment === paymentFilter);
+    }
+
+    setFilteredOrders(filtered);
+  }, [orders, searchTerm, statusFilter, paymentFilter]);
+
   useEffect(() => {
     filterOrders();
-  }, [orders, searchTerm, statusFilter, paymentFilter]);
+  }, [filterOrders]);
 
   const fetchOrders = async () => {
     try {
@@ -56,28 +80,6 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterOrders = () => {
-    let filtered = [...orders];
-
-    if (searchTerm) {
-      filtered = filtered.filter(order => 
-        order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.orderId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.item?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (statusFilter !== 'All') {
-      filtered = filtered.filter(order => order.status === statusFilter);
-    }
-
-    if (paymentFilter !== 'All') {
-      filtered = filtered.filter(order => order.payment === paymentFilter);
-    }
-
-    setFilteredOrders(filtered);
   };
 
   const handleEdit = (order: Order) => {
@@ -133,22 +135,22 @@ export default function OrdersPage() {
   };
 
   const exportToCSV = () => {
-    const formatDate = (date: any) => {
+    const formatDate = (date: Date | { toDate: () => Date } | string | null | undefined) => {
       if (!date) return 'N/A';
-      const d = date.toDate ? date.toDate() : new Date(date);
+      const d = (date as { toDate?: () => Date }).toDate ? (date as { toDate: () => Date }).toDate() : new Date(date as string);
       return d.toLocaleString();
     };
 
     const csvData = filteredOrders.map(order => [
       order.orderId,
       order.customerName,
-      order.items,
-      order.quantity,
-      order.amount,
-      order.payment,
+      order.item || (order.items?.[0]?.productName) || 'N/A',
+      order.quantity || order.items?.[0]?.quantity || 'N/A',
+      order.amount || order.totalAmount || 0,
+      order.payment || order.paymentStatus || 'N/A',
       order.status,
       formatDate(order.createdAt),
-      (order as any).mpesaReceipt || 'N/A'
+      (order as unknown as Record<string, string>).mpesaReceipt || 'N/A'
     ]);
 
     const headers = ['Order ID', 'Customer Name', 'Item', 'Quantity', 'Amount (KES)', 'Payment Status', 'Order Status', 'Created At', 'MPesa Receipt'];
@@ -182,7 +184,7 @@ export default function OrdersPage() {
     }
   };
 
-  const getPaymentColor = (payment: string) => {
+  const getPaymentColor = (payment: string | undefined) => {
     switch(payment) {
       case 'Paid':
         return 'text-green-600 font-semibold';
@@ -229,7 +231,7 @@ export default function OrdersPage() {
               </div>
             </div>
             <button 
-              onClick={() => window.location.href = '/dashboard/orders/new'}
+              onClick={() => router.push('/dashboard/orders/new')}
               className="px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-teal-700 bg-teal-600 text-white text-sm sm:text-base shadow-sm"
             >
               + New Order
@@ -383,6 +385,7 @@ export default function OrdersPage() {
                           <span className="text-sm text-gray-900">{order.customerName}</span>
                         </div>
                       </td>
+                      
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <Package className="h-4 w-4 text-gray-400 mr-2" />

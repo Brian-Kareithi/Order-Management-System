@@ -58,23 +58,23 @@ export default function LoginPage() {
       <div 
         className="absolute inset-0 -z-10"
         style={{ 
-          background: 'linear-gradient(135deg, #061E29 0%, #1D546D 50%, #5F9598 100%)'
+          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%)'
         }}
       />
       
       <div className="w-full max-w-md">
-        <div className="bg-white/95 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-200">
+        <div className="bg-white/95 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-surface">
           {/* Logo/Brand */}
           <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-block p-2 sm:p-3 rounded-full mb-3 sm:mb-4 bg-gray-900">
+            <div className="inline-block p-2 sm:p-3 rounded-full mb-3 sm:mb-4 bg-primary">
               <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1 sm:mb-2 text-gray-900">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1 sm:mb-2 text-primary">
               Welcome Back
             </h1>
-            <p className="text-sm sm:text-base font-medium text-gray-600">
+            <p className="text-sm sm:text-base font-medium text-secondary">
               Sign in to continue your journey
             </p>
           </div>
@@ -82,14 +82,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Email Field */}
             <div>
-              <label className="block font-semibold mb-2 text-sm sm:text-base text-gray-900">
+              <label className="block font-semibold mb-2 text-sm sm:text-base text-primary">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition text-sm sm:text-base bg-gray-50 text-gray-900"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-surface rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition text-sm sm:text-base bg-surface text-primary"
                 placeholder="your@email.com"
                 required
                 disabled={loading}
@@ -98,7 +98,7 @@ export default function LoginPage() {
             
             {/* Password Field */}
             <div>
-              <label className="block font-semibold mb-2 text-sm sm:text-base text-gray-900">
+              <label className="block font-semibold mb-2 text-sm sm:text-base text-primary">
                 Password
               </label>
               <div className="relative">
@@ -106,7 +106,7 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition text-sm sm:text-base pr-10 sm:pr-12 bg-gray-50 text-gray-900"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-surface rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition text-sm sm:text-base pr-10 sm:pr-12 bg-surface text-primary"
                   placeholder="••••••••"
                   required
                   disabled={loading}
@@ -130,7 +130,7 @@ export default function LoginPage() {
             <div className="text-right">
               <Link 
                 href="#" 
-                className="text-xs sm:text-sm font-medium hover:underline transition text-teal-600"
+                className="text-xs sm:text-sm font-medium hover:underline transition text-accent"
               >
                 Forgot password?
               </Link>
@@ -140,7 +140,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gray-900 text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md mt-2 sm:mt-4"
+              className="w-full bg-primary text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shadow-md mt-2 sm:mt-4"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -155,11 +155,11 @@ export default function LoginPage() {
           </form>
           
           {/* Sign Up Link */}
-          <p className="text-center mt-6 sm:mt-8 text-sm sm:text-base font-medium text-gray-600">
-            Don't have an account?{' '}
+          <p className="text-center mt-6 sm:mt-8 text-sm sm:text-base font-medium text-secondary">
+            Don&apos;t have an account?{' '}
             <Link 
               href="/auth/signup" 
-              className="font-bold hover:underline transition text-teal-600"
+              className="font-bold hover:underline transition text-accent"
             >
               Create one
             </Link>

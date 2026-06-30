@@ -93,7 +93,7 @@ export default function DashboardPage() {
       value: stats.totalOrders,
       icon: ShoppingBag,
       color: 'bg-blue-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-blue-50'
     },
     {
@@ -101,7 +101,7 @@ export default function DashboardPage() {
       value: stats.pendingOrders,
       icon: Clock,
       color: 'bg-yellow-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-yellow-50'
     },
     {
@@ -109,7 +109,7 @@ export default function DashboardPage() {
       value: stats.completedOrders,
       icon: CheckCircle,
       color: 'bg-green-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-green-50'
     },
     {
@@ -117,7 +117,7 @@ export default function DashboardPage() {
       value: stats.lowStock,
       icon: AlertTriangle,
       color: 'bg-red-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-red-50'
     },
     {
@@ -125,7 +125,7 @@ export default function DashboardPage() {
       value: `KES ${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: 'bg-purple-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-purple-50'
     },
     {
@@ -133,7 +133,7 @@ export default function DashboardPage() {
       value: stats.unreadMessages,
       icon: MessageCircle,
       color: 'bg-orange-600',
-      textColor: 'text-black',
+      textColor: 'text-primary',
       bgLight: 'bg-orange-50'
     }
   ];
@@ -170,12 +170,12 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-surface py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black">Welcome back, {user?.name}! 👋</h1>
-          <p className="text-black mt-1">Here's what's happening with your store today</p>
+          <h1 className="text-3xl font-bold text-primary">Welcome back, {user?.name}!</h1>
+          <p className="text-primary mt-1">Here's what's happening with your store today</p>
         </div>
 
         {/* Stats Grid - Smaller cards */}
@@ -187,17 +187,17 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className={`${stat.bgLight} p-2 rounded-lg`}>
-                  <stat.icon className="h-5 w-5 text-black" />
+                  <stat.icon className="h-5 w-5 text-primary" />
                 </div>
-                <span className="text-xs font-medium text-black uppercase tracking-wider">
+                <span className="text-xs font-medium text-primary uppercase tracking-wider">
                   {stat.title.split(' ')[0]}
                 </span>
               </div>
               <div className="mt-2">
-                <p className="text-xl font-bold text-black">
+                <p className="text-xl font-bold text-primary">
                   {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
                 </p>
-                <p className="text-xs text-black mt-1">{stat.title}</p>
+                <p className="text-xs text-primary mt-1">{stat.title}</p>
               </div>
             </div>
           ))}
@@ -209,11 +209,11 @@ export default function DashboardPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-black flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-black" />
+                <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
                   Quick Actions
                 </h2>
-                <span className="text-xs text-black bg-gray-100 px-2 py-1 rounded-full">
+                <span className="text-xs text-primary bg-gray-100 px-2 py-1 rounded-full">
                   {quickActions.length} available
                 </span>
               </div>
@@ -234,14 +234,14 @@ export default function DashboardPage() {
               {/* Additional Stats Mini Cards */}
               <div className="grid grid-cols-2 gap-3 mt-4">
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-black">Average Order Value</p>
-                  <p className="text-sm font-bold text-black">
+                  <p className="text-xs text-primary">Average Order Value</p>
+                  <p className="text-sm font-bold text-primary">
                     KES {stats.totalOrders > 0 ? Math.round(stats.totalRevenue / stats.totalOrders).toLocaleString() : 0}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-black">Completion Rate</p>
-                  <p className="text-sm font-bold text-black">
+                  <p className="text-xs text-primary">Completion Rate</p>
+                  <p className="text-sm font-bold text-primary">
                     {stats.totalOrders > 0 ? Math.round((stats.completedOrders / stats.totalOrders) * 100) : 0}%
                   </p>
                 </div>
@@ -252,28 +252,28 @@ export default function DashboardPage() {
           {/* Recent Activity - 1 column */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
-              <h2 className="text-lg font-semibold text-black flex items-center gap-2 mb-4">
-                <Clock className="h-5 w-5 text-black" />
+              <h2 className="text-lg font-semibold text-primary flex items-center gap-2 mb-4">
+                <Clock className="h-5 w-5 text-primary" />
                 Recent Activity
               </h2>
               
               {stats.totalOrders > 0 ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-black">New orders today</span>
-                    <span className="font-semibold text-black">0</span>
+                    <span className="text-primary">New orders today</span>
+                    <span className="font-semibold text-primary">0</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-black">Messages to reply</span>
-                    <span className="font-semibold text-black">{stats.unreadMessages}</span>
+                    <span className="text-primary">Messages to reply</span>
+                    <span className="font-semibold text-primary">{stats.unreadMessages}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-black">Low stock items</span>
-                    <span className="font-semibold text-black">{stats.lowStock}</span>
+                    <span className="text-primary">Low stock items</span>
+                    <span className="font-semibold text-primary">{stats.lowStock}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-black">Pending payments</span>
-                    <span className="font-semibold text-black">
+                    <span className="text-primary">Pending payments</span>
+                    <span className="font-semibold text-primary">
                       {stats.pendingOrders}
                     </span>
                   </div>
@@ -284,15 +284,15 @@ export default function DashboardPage() {
                       className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center justify-between group"
                     >
                       View all orders
-                      <span className="group-hover:translate-x-1 transition-transform text-black">→</span>
+                      <span className="group-hover:translate-x-1 transition-transform text-primary">→</span>
                     </Link>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <ShoppingBag className="h-10 w-10 text-black mx-auto mb-2" />
-                  <p className="text-sm text-black">No recent activity</p>
-                  <p className="text-xs text-black mt-1">Start by creating your first order</p>
+                  <ShoppingBag className="h-10 w-10 text-primary mx-auto mb-2" />
+                  <p className="text-sm text-primary">No recent activity</p>
+                  <p className="text-xs text-primary mt-1">Start by creating your first order</p>
                 </div>
               )}
             </div>
@@ -302,7 +302,7 @@ export default function DashboardPage() {
         {/* Performance Overview - Optional bottom section */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-black mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               Order Status Breakdown
             </h3>
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                     data-width={stats.totalOrders > 0 ? (stats.completedOrders / stats.totalOrders) * 100 : 0}
                   ></div>
                 </div>
-                <span className="text-xs text-black min-w-[60px]">
+                <span className="text-xs text-primary min-w-[60px]">
                   {stats.completedOrders} Done
                 </span>
               </div>
@@ -325,7 +325,7 @@ export default function DashboardPage() {
                     data-width={stats.totalOrders > 0 ? (stats.pendingOrders / stats.totalOrders) * 100 : 0}
                   ></div>
                 </div>
-                <span className="text-xs text-black min-w-[60px]">
+                <span className="text-xs text-primary min-w-[60px]">
                   {stats.pendingOrders} Pending
                 </span>
               </div>
@@ -333,7 +333,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-black mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               Inventory Status
             </h3>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
                     data-width={stats.lowStock > 0 ? 100 : 0}
                   ></div>
                 </div>
-                <span className="text-xs text-black min-w-[60px]">
+                <span className="text-xs text-primary min-w-[60px]">
                   {stats.lowStock} Low Stock
                 </span>
               </div>

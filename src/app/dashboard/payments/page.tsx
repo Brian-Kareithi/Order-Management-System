@@ -28,6 +28,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 
 // Define the Order interface based on your actual data structure
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Order {
   id: string;
   orderId: string;
@@ -43,6 +44,7 @@ export interface Order {
   createdAt: any;
   mpesaReceipt?: string;
   phoneNumber?: string;
+  [key: string]: unknown;
 }
 
 export default function PaymentsPage() {
@@ -306,7 +308,7 @@ export default function PaymentsPage() {
               body { 
                 font-family: 'Arial', sans-serif; 
                 padding: 40px; 
-                background: #F3F4F4;
+                background: var(--color-surface);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -317,16 +319,16 @@ export default function PaymentsPage() {
                 max-width: 400px; 
                 margin: 0 auto; 
                 background: white;
-                border: 2px solid #061E29; 
+                border: 2px solid var(--color-primary); 
                 padding: 30px;
                 box-shadow: 0 4px 12px rgba(6, 30, 41, 0.1);
               }
               h1 { 
                 text-align: center; 
-                color: #061E29;
+                color: var(--color-primary);
                 font-size: 24px;
                 margin-bottom: 20px;
-                border-bottom: 2px solid #1D546D;
+                border-bottom: 2px solid var(--color-secondary);
                 padding-bottom: 10px;
               }
               .details { margin: 20px 0; }
@@ -335,15 +337,15 @@ export default function PaymentsPage() {
                 justify-content: space-between; 
                 margin: 10px 0;
                 padding: 5px 0;
-                border-bottom: 1px dashed #F3F4F4;
+                border-bottom: 1px dashed var(--color-surface);
               }
-              .row strong { color: #1D546D; }
+              .row strong { color: var(--color-secondary); }
               .footer { 
                 margin-top: 30px; 
                 text-align: center; 
-                color: #061E29;
+                color: var(--color-primary);
                 font-style: italic;
-                border-top: 2px solid #5F9598;
+                border-top: 2px solid var(--color-accent);
                 padding-top: 15px;
               }
               .status-badge {
@@ -354,15 +356,15 @@ export default function PaymentsPage() {
                 font-weight: bold;
               }
               .status-paid {
-                background: #5F9598;
+                background: var(--color-accent);
                 color: white;
               }
               .status-unpaid {
-                background: #F3F4F4;
-                color: #1D546D;
+                background: var(--color-surface);
+                color: var(--color-secondary);
               }
               .item-details {
-                background: #F3F4F4;
+                background: var(--color-surface);
                 padding: 15px;
                 border-radius: 8px;
                 margin: 15px 0;
@@ -376,30 +378,30 @@ export default function PaymentsPage() {
               <div class="item-details">
                 <div class="row">
                   <strong>Item:</strong> 
-                  <span style="color: #061E29;">${order.item}</span>
+                  <span style="color: var(--color-primary);">${order.item}</span>
                 </div>
                 <div class="row">
                   <strong>Quantity:</strong> 
-                  <span style="color: #061E29;">${order.quantity}</span>
+                  <span style="color: var(--color-primary);">${order.quantity}</span>
                 </div>
                 <div class="row">
                   <strong>Unit Price:</strong> 
-                  <span style="color: #061E29;">KES ${order.price?.toLocaleString() || 'N/A'}</span>
+                  <span style="color: var(--color-primary);">KES ${order.price?.toLocaleString() || 'N/A'}</span>
                 </div>
               </div>
               
               <div class="details">
                 <div class="row">
                   <strong>Order ID:</strong> 
-                  <span style="color: #061E29;">${order.orderId}</span>
+                  <span style="color: var(--color-primary);">${order.orderId}</span>
                 </div>
                 <div class="row">
                   <strong>Customer:</strong> 
-                  <span style="color: #061E29;">${order.customerName}</span>
+                  <span style="color: var(--color-primary);">${order.customerName}</span>
                 </div>
                 <div class="row">
                   <strong>Total Amount:</strong> 
-                  <span style="font-size: 20px; font-weight: bold; color: #5F9598;">KES ${order.amount.toLocaleString()}</span>
+                  <span style="font-size: 20px; font-weight: bold; color: var(--color-accent);">KES ${order.amount.toLocaleString()}</span>
                 </div>
                 <div class="row">
                   <strong>Payment Status:</strong> 
@@ -409,16 +411,16 @@ export default function PaymentsPage() {
                 </div>
                 <div class="row">
                   <strong>Order Status:</strong> 
-                  <span style="color: #061E29;">${order.status}</span>
+                  <span style="color: var(--color-primary);">${order.status}</span>
                 </div>
                 <div class="row">
                   <strong>Date:</strong> 
-                  <span style="color: #061E29;">${formatDate(order.createdAt)}</span>
+                  <span style="color: var(--color-primary);">${formatDate(order.createdAt)}</span>
                 </div>
                 ${order.mpesaReceipt ? `
                 <div class="row">
                   <strong>M-PESA Receipt:</strong> 
-                  <span style="color: #061E29;">${order.mpesaReceipt}</span>
+                  <span style="color: var(--color-primary);">${order.mpesaReceipt}</span>
                 </div>
                 ` : ''}
               </div>
@@ -504,7 +506,7 @@ export default function PaymentsPage() {
   const paymentStatuses = ['all', ...new Set(orders.map(o => o.payment))];
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: '#F3F4F4' }}>
+    <div className="bg-surface min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* M-Pesa Modal */}
         <MpesaPaymentModal
@@ -520,17 +522,17 @@ export default function PaymentsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 fade-in">
           <div>
-            <h1 className="text-3xl font-bold" style={{ color: '#061E29' }}>Payment Management</h1>
-            <p className="mt-1" style={{ color: '#1D546D' }}>Track and manage all order payments</p>
+            <h1 className="text-3xl font-bold text-primary">Payment Management</h1>
+            <p className="mt-1 text-secondary">Track and manage all order payments</p>
           </div>
           <div className="flex gap-3">
-            <div className="px-6 py-3 rounded-lg shadow-lg" style={{ backgroundColor: '#1D546D' }}>
-              <span className="text-sm font-medium block" style={{ color: '#F3F4F4' }}>Pending Revenue</span>
-              <span className="text-2xl font-bold" style={{ color: '#F3F4F4' }}>KES {pendingRevenue.toLocaleString()}</span>
+            <div className="bg-secondary px-6 py-3 rounded-lg shadow-lg">
+              <span className="text-surface text-sm font-medium block">Pending Revenue</span>
+              <span className="text-surface text-2xl font-bold">KES {pendingRevenue.toLocaleString()}</span>
             </div>
-            <div className="px-6 py-3 rounded-lg shadow-lg" style={{ backgroundColor: '#061E29' }}>
-              <span className="text-sm font-medium block" style={{ color: '#F3F4F4' }}>Total Revenue</span>
-              <span className="text-2xl font-bold" style={{ color: '#F3F4F4' }}>KES {totalRevenue.toLocaleString()}</span>
+            <div className="bg-primary px-6 py-3 rounded-lg shadow-lg">
+              <span className="text-surface text-sm font-medium block">Total Revenue</span>
+              <span className="text-surface text-2xl font-bold">KES {totalRevenue.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -540,11 +542,11 @@ export default function PaymentsPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Total Orders</p>
-                <p className="text-2xl font-bold mt-2" style={{ color: '#061E29' }}>{orders.length}</p>
+                <p className="text-secondary text-sm font-medium">Total Orders</p>
+                <p className="text-primary text-2xl font-bold mt-2">{orders.length}</p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(6, 30, 41, 0.1)' }}>
-                <Package className="h-6 w-6" style={{ color: '#061E29' }} />
+              <div className="bg-primary/10 p-3 rounded-full">
+                <Package className="text-primary h-6 w-6" />
               </div>
             </div>
           </div>
@@ -552,13 +554,13 @@ export default function PaymentsPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Paid Orders</p>
-                <p className="text-2xl font-bold mt-2" style={{ color: '#5F9598' }}>
+                <p className="text-secondary text-sm font-medium">Paid Orders</p>
+                <p className="text-accent text-2xl font-bold mt-2">
                   {orders.filter(o => o.payment === 'Paid').length}
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(95, 149, 152, 0.1)' }}>
-                <CheckCircle className="h-6 w-6" style={{ color: '#5F9598' }} />
+              <div className="bg-accent/10 p-3 rounded-full">
+                <CheckCircle className="text-accent h-6 w-6" />
               </div>
             </div>
           </div>
@@ -566,12 +568,12 @@ export default function PaymentsPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Unpaid Orders</p>
-                <p className="text-2xl font-bold mt-2" style={{ color: '#EAB308' }}>
+                <p className="text-secondary text-sm font-medium">Unpaid Orders</p>
+                <p className="text-yellow-500 text-2xl font-bold mt-2">
                   {orders.filter(o => o.payment === 'Unpaid').length}
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}>
+              <div className="bg-yellow-500/10 p-3 rounded-full">
                 <Clock className="h-6 w-6 text-yellow-600" />
               </div>
             </div>
@@ -580,15 +582,15 @@ export default function PaymentsPage() {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#1D546D' }}>Avg Order Value</p>
-                <p className="text-2xl font-bold mt-2" style={{ color: '#1D546D' }}>
+                <p className="text-secondary text-sm font-medium">Avg Order Value</p>
+                <p className="text-secondary text-2xl font-bold mt-2">
                   KES {orders.length > 0 
                     ? Math.round(orders.reduce((sum, o) => sum + o.amount, 0) / orders.length).toLocaleString() 
                     : 0}
                 </p>
               </div>
-              <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(29, 84, 109, 0.1)' }}>
-                <TrendingUp className="h-6 w-6" style={{ color: '#1D546D' }} />
+              <div className="bg-secondary/10 p-3 rounded-full">
+                <TrendingUp className="text-secondary h-6 w-6" />
               </div>
             </div>
           </div>
@@ -599,36 +601,26 @@ export default function PaymentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Search Orders</label>
+              <label className="text-secondary block text-sm font-medium mb-2">Search Orders</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: '#5F9598' }} />
+                <Search className="text-accent absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by Order ID, Customer or Item..."
-                  className="w-full pl-10 pr-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: '#F3F4F4',
-                    color: '#061E29',
-                    backgroundColor: '#F3F4F4'
-                  }}
+                  className="w-full pl-10 pr-4 py-2 border-2 border-surface bg-surface text-primary rounded-lg focus:outline-none focus:ring-2 transition-all"
                 />
               </div>
             </div>
 
             {/* Payment Filter */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Payment Status</label>
+              <label className="text-secondary block text-sm font-medium mb-2">Payment Status</label>
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: '#F3F4F4',
-                  color: '#061E29',
-                  backgroundColor: '#F3F4F4'
-                }}
+                className="w-full p-2 border-2 border-surface bg-surface text-primary rounded-lg focus:outline-none focus:ring-2 transition-all"
               >
                 {paymentStatuses.map(status => (
                   <option key={status} value={status}>
@@ -640,16 +632,11 @@ export default function PaymentsPage() {
 
             {/* Date Filter */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#1D546D' }}>Date Range</label>
+              <label className="text-secondary block text-sm font-medium mb-2">Date Range</label>
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="w-full p-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: '#F3F4F4',
-                  color: '#061E29',
-                  backgroundColor: '#F3F4F4'
-                }}
+                className="w-full p-2 border-2 border-surface bg-surface text-primary rounded-lg focus:outline-none focus:ring-2 transition-all"
               >
                 <option value="all">All Time</option>
                 <option value="today">Today</option>
@@ -661,12 +648,12 @@ export default function PaymentsPage() {
 
           {/* Active Filters */}
           {(searchTerm || paymentFilter !== 'all' || dateFilter !== 'all') && (
-            <div className="mt-4 pt-4 border-t" style={{ borderColor: '#F3F4F4' }}>
+            <div className="mt-4 pt-4 border-t border-surface">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium" style={{ color: '#1D546D' }}>Active Filters:</span>
+                <span className="text-secondary text-sm font-medium">Active Filters:</span>
                 {searchTerm && (
-                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1" style={{ backgroundColor: '#061E29', color: '#F3F4F4' }}>
-                    Search: "{searchTerm}"
+                  <span className="bg-primary text-surface px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                    Search: &ldquo;{searchTerm}&rdquo;
                     <button onClick={() => setSearchTerm('')} className="ml-1 hover:opacity-80">×</button>
                   </span>
                 )}
@@ -681,15 +668,14 @@ export default function PaymentsPage() {
                   </span>
                 )}
                 {dateFilter !== 'all' && (
-                  <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1" style={{ backgroundColor: '#5F9598', color: '#F3F4F4' }}>
+                  <span className="bg-accent text-surface px-3 py-1 rounded-full text-sm flex items-center gap-1">
                     Date: {dateFilter}
                     <button onClick={() => setDateFilter('all')} className="ml-1 hover:opacity-80">×</button>
                   </span>
                 )}
                 <button 
                   onClick={clearFilters}
-                  className="text-sm ml-2 font-medium hover:underline flex items-center gap-1"
-                  style={{ color: '#061E29' }}
+                  className="text-primary text-sm ml-2 font-medium hover:underline flex items-center gap-1"
                 >
                   <X className="h-4 w-4" />
                   Clear All
@@ -700,13 +686,12 @@ export default function PaymentsPage() {
         </div>
         
         {/* Orders/Payments Table */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border fade-in" style={{ borderColor: '#F3F4F4' }}>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-surface fade-in">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead style={{ backgroundColor: '#061E29' }}>
+              <thead className="bg-primary">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
-                      style={{ color: '#F3F4F4' }}
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
                       onClick={() => handleSort('orderId')}>
                     <div className="flex items-center gap-2">
                       <Hash className="h-4 w-4" />
@@ -716,8 +701,7 @@ export default function PaymentsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
-                      style={{ color: '#F3F4F4' }}
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
                       onClick={() => handleSort('customerName')}>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
@@ -727,17 +711,16 @@ export default function PaymentsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#F3F4F4' }}>
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-2">
                       <Package className="h-4 w-4" />
                       Item
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#F3F4F4' }}>
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     Qty
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
-                      style={{ color: '#F3F4F4' }}
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
                       onClick={() => handleSort('amount')}>
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4" />
@@ -747,17 +730,16 @@ export default function PaymentsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#F3F4F4' }}>
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-2">
                       <CreditCard className="h-4 w-4" />
                       Payment
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#F3F4F4' }}>
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
-                      style={{ color: '#F3F4F4' }}
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:opacity-80"
                       onClick={() => handleSort('createdAt')}>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -767,7 +749,7 @@ export default function PaymentsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#F3F4F4' }}>
+                  <th className="text-surface px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -776,9 +758,9 @@ export default function PaymentsPage() {
                 {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="px-6 py-12 text-center">
-                      <CreditCard className="h-12 w-12 mx-auto mb-3" style={{ color: '#1D546D', opacity: 0.5 }} />
-                      <p className="font-medium" style={{ color: '#061E29' }}>No orders found</p>
-                      <p className="text-sm mt-1" style={{ color: '#1D546D' }}>
+                      <CreditCard className="text-secondary/50 h-12 w-12 mx-auto mb-3" />
+                      <p className="text-primary font-medium">No orders found</p>
+                      <p className="text-secondary text-sm mt-1">
                         {orders.length > 0 
                           ? 'No orders match your filters' 
                           : 'No orders available'}
@@ -795,25 +777,25 @@ export default function PaymentsPage() {
                       onClick={() => setSelectedOrder(order)}
                     >
                       <td className="px-6 py-4">
-                        <span className="font-medium" style={{ color: '#061E29' }}>#{order.orderId}</span>
+                        <span className="text-primary font-medium">#{order.orderId}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="font-medium" style={{ color: '#061E29' }}>{order.customerName}</div>
-                          <div className="text-xs" style={{ color: '#1D546D' }}>{order.customerId?.slice(0, 8)}...</div>
+                          <div className="text-primary font-medium">{order.customerName}</div>
+                          <div className="text-secondary text-xs">{order.customerId?.slice(0, 8)}...</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div style={{ color: '#061E29' }}>{order.item}</div>
+                          <div className="text-primary">{order.item}</div>
                           {order.price && (
-                            <div className="text-xs" style={{ color: '#1D546D' }}>@ KES {order.price}</div>
+                            <div className="text-secondary text-xs">@ KES {order.price}</div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4" style={{ color: '#061E29' }}>{order.quantity}</td>
+                      <td className="text-primary px-6 py-4">{order.quantity}</td>
                       <td className="px-6 py-4">
-                        <span className="font-bold" style={{ color: '#5F9598' }}>KES {order.amount.toLocaleString()}</span>
+                        <span className="text-accent font-bold">KES {order.amount.toLocaleString()}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPaymentStatusColor(order.payment)}`}>
@@ -829,7 +811,7 @@ export default function PaymentsPage() {
                           {order.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm" style={{ color: '#1D546D' }}>
+                      <td className="text-secondary px-6 py-4 text-sm">
                         {formatDate(order.createdAt)}
                       </td>
                       <td className="px-6 py-4">
@@ -841,8 +823,7 @@ export default function PaymentsPage() {
                                   e.stopPropagation();
                                   handleInitiateMpesaPayment(order);
                                 }}
-                                className="font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
-                                style={{ color: '#5F9598' }}
+                                className="text-accent font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
                               >
                                 <Smartphone className="h-4 w-4" />
                                 M-PESA
@@ -852,8 +833,7 @@ export default function PaymentsPage() {
                                   e.stopPropagation();
                                   handleMarkAsPaid(order);
                                 }}
-                                className="font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
-                                style={{ color: '#1D546D' }}
+                                className="text-secondary font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
                               >
                                 <CheckCircle className="h-4 w-4" />
                                 Mark Paid
@@ -865,8 +845,7 @@ export default function PaymentsPage() {
                               e.stopPropagation();
                               handlePrintReceipt(order);
                             }}
-                            className="font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
-                            style={{ color: '#061E29' }}
+                            className="text-primary font-medium flex items-center gap-1 text-sm transition-all duration-200 hover:scale-105"
                           >
                             <Printer className="h-4 w-4" />
                             Print
@@ -883,10 +862,10 @@ export default function PaymentsPage() {
 
         {/* Footer with Export and Summary */}
         <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 fade-in">
-          <div className="text-sm" style={{ color: '#1D546D' }}>
+          <div className="text-secondary text-sm">
             Showing {filteredOrders.length} of {orders.length} orders
             {pendingRevenue > 0 && (
-              <span className="ml-2 font-medium" style={{ color: '#EAB308' }}>
+              <span className="text-yellow-500 ml-2 font-medium">
                 (KES {pendingRevenue.toLocaleString()} pending)
               </span>
             )}
@@ -894,8 +873,7 @@ export default function PaymentsPage() {
           <div className="flex gap-3">
             <button
               onClick={clearFilters}
-              className="px-4 py-2 border-2 rounded-lg transition-all duration-200 hover:opacity-80 font-medium flex items-center gap-2"
-              style={{ borderColor: '#F3F4F4', color: '#1D546D' }}
+              className="px-4 py-2 border-2 border-surface text-secondary rounded-lg transition-all duration-200 hover:opacity-80 font-medium flex items-center gap-2"
             >
               <Filter className="h-4 w-4" />
               Reset Filters
@@ -903,8 +881,7 @@ export default function PaymentsPage() {
             <button
               onClick={handleExportCSV}
               disabled={filteredOrders.length === 0}
-              className="px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
-              style={{ backgroundColor: '#061E29', color: '#F3F4F4' }}
+              className="bg-primary text-surface px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
             >
               <Download className="h-4 w-4" />
               Export CSV
